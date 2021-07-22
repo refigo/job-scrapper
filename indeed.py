@@ -15,22 +15,31 @@ def extract_indeed_pages():
     max_page = pages[-1]
     return max_page
 
+def extract_job(html):
+    spans = html.find_all("span")
+    i = 0
+    if spans[0].string == "new": i = i + 1
+    title = spans[i].string
+    company = spans[i + 1].string
+    location = html.find("div", {"class":"companyLocation"}).string
+    job_id = html["data-jk"]
+    return {
+        'title': title, 
+        'company': company, 
+        'location': location,
+        'link': f"https://kr.indeed.com/viewjob?jk={job_id}"
+        }
+
 def extract_indeed_jobs(last_page):
     jobs = []
-    # for page in range(last_page):
-    result = requests.get(f"{URL}&start={0*LIMIT}")
-    soup = BeautifulSoup(result.text, "html.parser")
-    results = soup.find_all('a', {"class":"tapItem"})
-    for result in results:
-        spans = result.find_all("span")
-        i = 0
-        if spans[0].string == "new": i = i + 1
-        title = spans[i].string
-        print(title, end=' # ')
-        company = spans[i + 1].string
-        print(company, end=' # ')
-        location = result.find("div", {"class":"companyLocation"}).string
-        print(location)
+    for page in range(last_page):
+        print(f"Scrapping page {page}")
+        result = requests.get(f"{URL}&start={page*LIMIT}")
+        soup = BeautifulSoup(result.text, "html.parser")
+        results = soup.find_all('a', {"class":"tapItem"})
+        for result in results:
+            job = extract_job(result)
+            jobs.append(job)
     return jobs
 
         
