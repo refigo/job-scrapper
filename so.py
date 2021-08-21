@@ -41,7 +41,8 @@ def extract_jobs(last_page, url):
     return jobs
 
 def get_jobs(word):
-    url = f"https://stackoverflow.com/jobs?q={word}"
+    #url = f"https://stackoverflow.com/jobs?q={word}"
+    url = f"https://stackoverflow.com/jobs?r=true&q={word}"
     last_page = get_last_page(url)
     jobs = extract_jobs(last_page, url)
     return jobs
